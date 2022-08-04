@@ -91,7 +91,8 @@ def init_file_capture(es, tshark, pcap_files, chunk):
 @click.option('--chunk', default=1000, help='Number of packets to bulk index (default=1000)')
 @click.option('--count', default=0, help='Number of packets to capture during live capture (default=0, capture indefinitely)')
 @click.option('--list', is_flag=True, help='Lists the network interfaces')
-def main(node, nic, file, dir, bpf, chunk, count, list):
+@click.option('--tcpout', is_flag=True, help='Send output to tcp port')
+def main(node, nic, file, dir, bpf, chunk, count, list, tcpout):
     try:
         tshark = Tshark()
         tshark.set_interrupt_handler()

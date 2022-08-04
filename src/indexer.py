@@ -18,6 +18,8 @@ See the License for the specific language governing permissions and
 """
 
 from datetime import datetime
+import socket
+import json
 
 
 def index_packets(capture):
@@ -42,10 +44,17 @@ def dump_packets(capture):
     :param capture: Series of packets captured by the Tshark object.
     :param create_date_utc: Date the PCAP file or live capture was created
     """
-    packet_no = 1
+
+    try:
+        tcpsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        print ("Socket successfully created")
+    except socket.error as err:
+        print ("socket creation failed with error %s" %(err))
+    server_address = ("127.0.0.1", 5051)
+    tcpsock.connect(server_address)
+
     for packet in capture:
-        timestamp = int(packet['timestamp'])/1000
-        print('Packet no.', packet_no)
-        print('* packet time stamp -', datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S'))
-        print('* payload - ', packet)
-        packet_no += 1
+        msg = json.dumps(packet) + "\n"
+        tcpsock.send(msg.encode())
+
+    tcpsock.close()
